@@ -4,5 +4,5 @@
 
 ## instructions to install
 
-- Linux pip3 install -r requirements.txt
-- Windows pip install -r requirements.txt
+- Linux -pip3 install -r requirements.txt
+- Windows -pip install -r requirements.txt
