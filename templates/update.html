@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display</title>
+    <title>Update Fee</title>
 </head>
 
 <body>
-    <h3>Display</h3>
-
-    <p>welcome {{current_user}}</p>
+    <p>{{current_user}} i'm glad you want to Pay fee</p>
+    <form method="post">
+        {{form.hidden_tag()}} {{form.amount.label()}}{{form.amount}} <br> {{form.type.label()}} {{form.type}}
+        <br> {{form.submt}}
+    </form>
     <a href="{{url_for('logout')}}">logout</a>
 </body>
 
