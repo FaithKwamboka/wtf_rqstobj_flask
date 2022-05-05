@@ -2,18 +2,28 @@
 from flask import Flask, redirect, render_template,request, url_for,session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField,SubmitField
+from wtforms import StringField,SubmitField,PasswordField
 from wtforms.validators import DataRequired
 from flask_migrate import Migrate
+
+from flask_bcrypt import Bcrypt
+
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///db.db'
 app.config['SECRET_KEY']='this is a secret'
-
+bcrypt=Bcrypt(app)
 db=SQLAlchemy(app)
 migrate=Migrate(app,db)
+
+
 class UserForm(FlaskForm):
     name=StringField('NAME',validators=[DataRequired()])
     course=StringField('Course',validators=[DataRequired()])
+    submt=SubmitField('login')
+
+class UserFrm(FlaskForm):
+    name=StringField("username",validators=[DataRequired()])
+    password=PasswordField("Password",validators=[DataRequired()])
     submt=SubmitField('login')
 
 class FeeForm(FlaskForm):
@@ -36,6 +46,11 @@ class Fee(db.Model):
     type=db.Column(db.String(150),nullable=False)
     Student=db.relationship('Student',backref='Std')
 
+class User(db.Model):
+    id= db.Column(db.Integer,primary_key=True)
+    username=db.Column(db.String(40),nullable=False)
+    password=db.Column(db.String(500),nullable=False)
+
 
 
 
@@ -53,7 +68,23 @@ def display():
         name="no user logged in"
     
     return render_template('display.html',current_user=name)    
-
+#BCRYPT
+# plain_text => {{gibberish}}
+#{{Gibberish}}=>plain_text
+@app.route("/login",methods=['POST','GET'])
+def login():
+    fr=UserFrm()
+    if fr.validate_on_submit():
+        usr=User.query.filter_by(username=fr.name.data).first()
+        if usr:
+            if bcrypt.check_password_hash(usr.password,fr.password.data):
+                session["name"]=usr.username
+        # usr=User(username=fr.name.data,password=hash_pwd)
+        # db.session.add(usr)
+        # db.session.commit()
+                logged_in_user=session["name"]
+                return redirect(url_for("home"))
+    return render_template("index.html",form=fr)
 
 @app.route('/', methods=['POST','GET'])
 def home():
@@ -70,7 +101,7 @@ def home():
         session["name"]=stdfrm.name.data
         return redirect(url_for('display'))
 
-    return render_template('index.html',form=stdfrm)
+    return render_template('dashboard.html',user=session["name"])
 
 
 @app.route('/update',methods=['POST','GET'])
@@ -87,6 +118,8 @@ def update():
         name="no user logged in"
 
     return render_template('update.html',form=fee,current_user=name)
+
+    
 @app.route('/logout')
 def logout():
     session["name"]=None
