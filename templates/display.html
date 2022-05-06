@@ -12,7 +12,8 @@
     <h3>Display</h3>
 
     <p>welcome {{current_user}}</p>
-
+    {% if data %} {% for datum in data %}
+    <img src="{{url_for('static',filename='uploads/'+datum)}}" alt="This is an image" srcset=""> {% endfor %} {% else %}
     <a href="{{url_for('logout')}}">logout</a>
     <form method="post" enctype="multipart/form-data">
         {{form.hidden_tag()}} {{form.file}}
@@ -21,6 +22,8 @@
 
 
     </form>
+    {% endif %}
+
 
 
 

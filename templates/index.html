@@ -9,7 +9,10 @@
 </head>
 
 <body>
-    <a href="url_for('display')"></a>
+    <a href="url_for('display')">display</a>
+    <h4>LOGIN</h4>
+    {% if user %} {{ user.username }} {% endif %}
+
     <form method="POST">
         {{ form.hidden_tag() }}{{form.name.label()}} {{form.name}}
         <br> {{form.password.label()}}{{form.password}}
