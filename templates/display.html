@@ -12,7 +12,18 @@
     <h3>Display</h3>
 
     <p>welcome {{current_user}}</p>
+
     <a href="{{url_for('logout')}}">logout</a>
+    <form method="post" enctype="multipart/form-data">
+        {{form.hidden_tag()}} {{form.file}}
+        <br> {{form.submt}}
+
+
+
+    </form>
+
+
+
 </body>
 
 </html>

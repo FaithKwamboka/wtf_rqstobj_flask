@@ -1,16 +1,18 @@
 
+from crypt import methods
 from flask import Flask, redirect, render_template,request, url_for,session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField,SubmitField,PasswordField
+from wtforms import StringField,SubmitField,PasswordField,FileField
 from wtforms.validators import DataRequired
 from flask_migrate import Migrate
-
+import os
 from flask_bcrypt import Bcrypt
 
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///db.db'
 app.config['SECRET_KEY']='this is a secret'
+app.config["UPLOAD_FOLDER"]='static'
 bcrypt=Bcrypt(app)
 db=SQLAlchemy(app)
 migrate=Migrate(app,db)
@@ -21,9 +23,20 @@ class UserForm(FlaskForm):
     course=StringField('Course',validators=[DataRequired()])
     submt=SubmitField('login')
 
+
+class UploadForm(FlaskForm):
+    file=FileField('Add a File',validators=[DataRequired()])
+    submt=SubmitField('Upload')
+
 class UserFrm(FlaskForm):
     name=StringField("username",validators=[DataRequired()])
     password=PasswordField("Password",validators=[DataRequired()])
+    submt=SubmitField('login')
+
+class RegisterFrm(FlaskForm):
+    name=StringField("username",validators=[DataRequired()])
+    password=PasswordField("Password",validators=[DataRequired()])
+    cnfpass=PasswordField("Confirm Password",validators=[DataRequired()])
     submt=SubmitField('login')
 
 class FeeForm(FlaskForm):
@@ -59,18 +72,37 @@ class Teachers(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     firstname=db.Column(db.String(50),nullable=False)
 
-@app.route('/disp')
+@app.route('/display', methods=["POST","GET"])
 def display():
-    qr_all=Student.query.all()
-    if session["name"]!=None:
+    frm=UploadForm()
+    if "name" in session:
         name=session["name"]
     else:
-        name="no user logged in"
+        name=" "
+    if frm.validate_on_submit():
+        # file=request.files
+        file=frm.file
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"],frm.file.data))
+        return f"This is the file {frm.file.data}"
     
-    return render_template('display.html',current_user=name)    
+    return render_template('display.html',current_user=name,form=frm)    
 #BCRYPT
 # plain_text => {{gibberish}}
 #{{Gibberish}}=>plain_text
+
+@app.route('/register', methods=["POST","GET"])
+def register():
+    fr=RegisterFrm()
+    if fr.validate_on_submit():
+        if fr.cnfpass.data==fr.password.data:
+            hash_pwd=bcrypt.generate_password_hash(fr.password.data)
+        usr=User(username=fr.name.data,password=hash_pwd)
+        session["name"]=fr.name.data
+        db.session.add(usr)
+        db.session.commit()
+        return redirect(url_for('home'))
+
+    return render_template('registration.html',form=fr)
 @app.route("/login",methods=['POST','GET'])
 def login():
     fr=UserFrm()
@@ -98,31 +130,29 @@ def home():
         # addstd=Student(firstname=stdfrm.name.data,course=stdfrm.course.data)
         # db.session.add(addstd)
         # db.session.commit()
-        session["name"]=stdfrm.name.data
-        return redirect(url_for('display'))
+        return render_template('dashboard.html',user=session["name"])
 
-    return render_template('dashboard.html',user=session["name"])
+    return render_template('dashboard.html')
 
 
 @app.route('/update',methods=['POST','GET'])
 def update():
     fee=FeeForm()
-    
+    if 'name' not  in session:
+        return redirect(url_for('login'))
+
     if fee.validate_on_submit():
         paid=Fee(amount=fee.amount.data,type=fee.type.data)
         db.session.add(paid)
         db.session.commit()
-    if session["name"]!=None:
-        name=session["name"]
-    else:
-        name="no user logged in"
+    name=session["name"]
 
     return render_template('update.html',form=fee,current_user=name)
 
     
 @app.route('/logout')
 def logout():
-    session["name"]=None
+    session.pop("name",None)
     return redirect(url_for('home'))
 if __name__=='__main__':
     app.run(debug=True)
