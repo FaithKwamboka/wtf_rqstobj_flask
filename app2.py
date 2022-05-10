@@ -1,5 +1,4 @@
 
-from crypt import methods
 from flask import Flask, redirect, render_template,request, url_for,session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
@@ -8,11 +7,12 @@ from wtforms.validators import DataRequired
 from flask_migrate import Migrate
 import os
 from flask_bcrypt import Bcrypt
+from flask_mail import Mail,Message
 
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///db.db'
 app.config['SECRET_KEY']='this is a secret'
-app.config["UPLOAD_FOLDER"]='static/uploads'
+
 bcrypt=Bcrypt(app)
 db=SQLAlchemy(app)
 migrate=Migrate(app,db)
@@ -157,3 +157,6 @@ def logout():
     return redirect(url_for('home'))
 if __name__=='__main__':
     app.run(debug=True)
+
+
+pass_w='BenedictXVI16'
