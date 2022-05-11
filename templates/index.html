@@ -11,6 +11,7 @@
 <body>
     <a href="url_for('display')">display</a>
     <h4>LOGIN</h4>
+    <h3>Not Registered <a href="{{url_for('register')}}">Register</a> </h3>
     {% if user %} {{ user.username }} {% endif %}
 
     <form method="POST">
