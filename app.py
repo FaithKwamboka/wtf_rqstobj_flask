@@ -102,7 +102,7 @@ def register():
     frm=RegisterFrm()
     if frm.validate_on_submit():
         if frm.password.data==frm.cnfpass.data:
-            hash_pwd=bcrypt.generate_password_hash(frm.password.data)
+            hash_pwd=bcrypt.generate_password_hash(frm.password.data).decode('utf-8')
             newuser=User(username=frm.name.data,email=frm.email.data,password=hash_pwd)
             db.session.add(newuser)
             db.session.commit()
