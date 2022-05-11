@@ -12,7 +12,7 @@ from flask_migrate import Migrate
 
 import app2
 app=Flask(__name__)
-app.config['DATABASE_URL']='postgresql://wyvxyugbxpzrcf:1fac8d5d352609bc6017bf2283ff298dbc3791f906c31ca98d7e33f2165dc483@ec2-3-224-164-189.compute-1.amazonaws.com:5432/dbl4fnkcg8etl6'
+app.config['DATABASE_URL']='postgres://wyvxyugbxpzrcf:1fac8d5d352609bc6017bf2283ff298dbc3791f906c31ca98d7e33f2165dc483@ec2-3-224-164-189.compute-1.amazonaws.com:5432/dbl4fnkcg8etl6'
 app.config['SECRET_KEY']='this is a secret'
 app.config["MAIL_DEFAULT_SENDER"]="Steveotieno701@gmail.com"
 app.config["MAIL_USERNAME"]="Steveotieno701@gmail.com"
@@ -75,6 +75,9 @@ class Post(db.Model):
     post=db.Column(db.String(700),nullable=False)
     poster=db.Column(db.Integer,db.ForeignKey('user.id'))
     
+@app.before_first_request
+def create_tables():
+    db.create_all()
 #methods form UserMixin
 #is_authenticated()
 #is_active()
