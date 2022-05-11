@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired
 from flask_bcrypt import Bcrypt
 from flask_login import UserMixin,login_manager, login_required,login_user,logout_user,LoginManager,current_user
 import os
+import io
 from flask_mail import Message, Mail
 from flask_migrate import Migrate
 
@@ -94,7 +95,8 @@ def login():
         if frm.validate_on_submit():
             user=User.query.filter_by(username=frm.name.data).first()
             if user:
-                if bcrypt.check_password_hash(user.password.decode('utf-8') ,frm.password.data):
+                psd=io.BytesIO(user.password)
+                if bcrypt.check_password_hash(psd,frm.password.data):
                     #load_user(user)
                     login_user(user)
                     return redirect(url_for('dashboard'))
