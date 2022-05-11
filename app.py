@@ -95,7 +95,7 @@ def login():
         if frm.validate_on_submit():
             user=User.query.filter_by(username=frm.name.data).first()
             if user:
-                psd=io.BytesIO(user.password)
+                psd=io.StringIO(user.password)
                 if bcrypt.check_password_hash(psd,frm.password.data):
                     #load_user(user)
                     login_user(user)
