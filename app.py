@@ -74,7 +74,7 @@ class Post(db.Model):
     title=db.Column(db.String(50),nullable=False)
     post=db.Column(db.String(700),nullable=False)
     poster=db.Column(db.Integer,db.ForeignKey('user.id'))
-    
+
 @app.before_first_request
 def create_tables():
     db.create_all()
@@ -109,8 +109,8 @@ def register():
             newuser=User(username=frm.name.data,email=frm.email.data,password=hash_pwd)
             db.session.add(newuser)
             db.session.commit()
-            msg=Message(subject=" POSTER APP REGISTRATION",recipients=[frm.email.data],body=frm.name.data+" Thank you for registering")
-            mail.send(msg)
+            # msg=Message(subject=" POSTER APP REGISTRATION",recipients=[frm.email.data],body=frm.name.data+" Thank you for registering")
+            # mail.send(msg)
             return redirect(url_for('login'))
         else:
             flash(" Passwords do not match")
