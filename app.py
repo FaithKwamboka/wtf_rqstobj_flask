@@ -94,7 +94,7 @@ def login():
         if frm.validate_on_submit():
             user=User.query.filter_by(username=frm.name.data).first()
             if user:
-                if bcrypt.check_password_hash(user.password,frm.password.data):
+                if bcrypt.check_password_hash(user.password.decode('utf-8') ,frm.password.data):
                     #load_user(user)
                     login_user(user)
                     return redirect(url_for('dashboard'))
