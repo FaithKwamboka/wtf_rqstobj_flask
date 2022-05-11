@@ -66,7 +66,7 @@ class User(db.Model,UserMixin):
     id=db.Column(db.Integer,primary_key=True)
     username=db.Column(db.String(40),nullable=False)
     email=db.Column(db.String(40))
-    password=db.Column(db.Blob())
+    password=db.Column(db.LargeBinary())
     postman=db.relationship('Post',backref="postman")
 
 
