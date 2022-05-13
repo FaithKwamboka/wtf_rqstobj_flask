@@ -140,16 +140,22 @@ def uploadimage():
     if frm.validate_on_submit():
         file=request.files["file"]
         file.save(os.path.join(app.config["UPLOAD_FOLDER"],secure_filename(file.filename)))
-        upload=Images(name=file.filename,uploader_id=user.id)
+        upload=Images(name=secure_filename(file.filename),uploader_id=user.id)
         db.session.add(upload)
         db.session.commit()
         return redirect(url_for("viewimage"))
     return render_template("imageupload.html",form=frm,user=user.username)
 
+@app.route("/viewallimages",methods=["POST","GET"])
+@login_required
+def viewallimages():
+    allimages=Images.query.all()
+    return render_template("viewall.html",images=allimages)
+
 @app.route("/viewimage",methods=["POST","GET"])
 @login_required
 def viewimage():
-    userimages=Images.query.filter_by(uploader_id=current_user.id).first()
+    userimages=Images.query.filter_by(uploader_id=current_user.id).all()
     return render_template("imageview.html",name=current_user.username,images=userimages)
 
     

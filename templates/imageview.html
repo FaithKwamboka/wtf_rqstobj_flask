@@ -11,7 +11,10 @@
 
 <body>
     <h4> {{ name}} These are the images you have uploaded</h4>
-    {% for image in images %}
+    <a href="{{url_for('uploadimage')}}">Upload another image</a>
+    <br>
+    <a href="{{url_for('logout')}}">Logout</a>
+    <br> {% for image in images %}
     <img src="{{url_for('static', filename='uploads/'+image.name)}}" alt="This is the image" srcset=""> {% endfor %}
 
 </body>
