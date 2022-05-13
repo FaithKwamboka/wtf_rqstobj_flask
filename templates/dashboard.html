@@ -12,7 +12,10 @@
 <body>
     <p>Welcome {{user}} </p>
     <a href="{{ url_for('logout')}}">logout</a>
+
     <br>
+    <a href="{{ url_for('uploadimage')}}">Upload Image</a>
+    <a href="{{url_for('viewimage')}}">View My Image</a>
     <div class="container">
         <div class="row">
             <div class="col-md-3">
